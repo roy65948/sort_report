@@ -1,0 +1,49 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+// bubbleSort: sorts `arr` in ascending order using bubble sort algorithm
+// Parameters:
+//   arr - reference to a vector of integers to be sorted
+// Behavior:
+//   Repeatedly passes through the vector, comparing adjacent elements
+//   and swapping them if they are out of order. Each full pass "bubbles"
+//   the largest remaining element to the end of the unsorted portion.
+//   The algorithm stops early if a pass makes no swaps (already sorted).
+void bubbleSort(vector<int>& arr) {
+    int n = arr.size();
+    for (int i = 0; i < n - 1; ++i) {
+        bool swapped = false;
+        // after i passes, the last i elements are in place
+        for (int j = 0; j < n - 1 - i; ++j) {
+            if (arr[j] > arr[j + 1]) {
+                swap(arr[j], arr[j + 1]);
+                swapped = true;
+            }
+        }
+        if (!swapped) {
+            // No elements were swapped during the pass; array is sorted
+            break;
+        }
+    }
+}
+
+int main() {
+    vector<int> data;
+    cout << "Enter integers to sort (type -1 to finish):\n";
+    int x;
+    while (cin >> x && x != -1) {
+        data.push_back(x);
+    }
+
+    bubbleSort(data);
+
+    cout << "Sorted output:\n";
+    for (int v : data) {
+        cout << v << " ";
+    }
+    cout << '\n';
+
+    return 0;
+}
