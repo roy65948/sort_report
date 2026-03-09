@@ -3,21 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>氣泡排序法示範</title>
+    <title>排序算法比較</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
+        body { font-family: Arial, sans-serif; margin: 20px; text-align: center; }
+        h1 { color: #333; }
+        ul { list-style: none; padding: 0; }
+        li { margin: 10px 0; }
+        a { text-decoration: none; padding: 10px 20px; background-color: #4CAF50; color: white; border-radius: 5px; cursor: pointer; }
+        a:hover { background-color: #45a049; }
+        .page { display: none; }
+        .page.active { display: block; }
         input, button { margin: 10px 0; padding: 8px; }
         #output { margin-top: 20px; font-weight: bold; }
     </style>
 </head>
 <body>
-    <h1>氣泡排序法 (Bubble Sort)</h1>
-    <p>輸入一串數字（用空格分隔），點擊排序按鈕來執行氣泡排序。</p>
-    <input type="text" id="inputNumbers" placeholder="例如: 5 3 8 1 9" size="50">
-    <button onclick="sortNumbers()">排序</button>
-    <div id="output"></div>
+    <div id="home" class="page active">
+        <h1>排序算法比較</h1>
+        <p>選擇一個排序算法來查看示範：</p>
+        <ul>
+            <li><a onclick="showPage('bubble')">氣泡排序法 (Bubble Sort)</a></li>
+            <li><a onclick="showPage('quick')">快速排序法 (Quick Sort)</a> - 即將推出</li>
+            <li><a onclick="showPage('merge')">合併排序法 (Merge Sort)</a> - 即將推出</li>
+            <li><a onclick="showPage('insertion')">插入排序法 (Insertion Sort)</a> - 即將推出</li>
+        </ul>
+    </div>
+
+    <div id="bubble" class="page">
+        <h1>氣泡排序法 (Bubble Sort)</h1>
+        <button onclick="showPage('home')">回首頁</button>
+        <p>輸入一串數字（用空格分隔），點擊排序按鈕來執行氣泡排序。</p>
+        <input type="text" id="inputNumbers" placeholder="例如: 5 3 8 1 9" size="50">
+        <button onclick="sortNumbers()">排序</button>
+        <div id="output"></div>
+    </div>
 
     <script>
+        function showPage(pageId) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+        }
+
         function bubbleSort(arr) {
             let n = arr.length;
             for (let i = 0; i < n - 1; i++) {
@@ -46,4 +73,5 @@
         }
     </script>
 </body>
-</html>
+</html></content>
+<parameter name="filePath">c:\Users\roy12\roy\code\1142\0302\index.html
