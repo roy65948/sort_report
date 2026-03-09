@@ -1,49 +1,49 @@
-#include <iostream>
-#include <vector>
+<!DOCTYPE html>
+<html lang="zh-tw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>氣泡排序法示範</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        input, button { margin: 10px 0; padding: 8px; }
+        #output { margin-top: 20px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>氣泡排序法 (Bubble Sort)</h1>
+    <p>輸入一串數字（用空格分隔），點擊排序按鈕來執行氣泡排序。</p>
+    <input type="text" id="inputNumbers" placeholder="例如: 5 3 8 1 9" size="50">
+    <button onclick="sortNumbers()">排序</button>
+    <div id="output"></div>
 
-using namespace std;
-
-// bubbleSort: sorts `arr` in ascending order using bubble sort algorithm
-// Parameters:
-//   arr - reference to a vector of integers to be sorted
-// Behavior:
-//   Repeatedly passes through the vector, comparing adjacent elements
-//   and swapping them if they are out of order. Each full pass "bubbles"
-//   the largest remaining element to the end of the unsorted portion.
-//   The algorithm stops early if a pass makes no swaps (already sorted).
-void bubbleSort(vector<int>& arr) {
-    int n = arr.size();
-    for (int i = 0; i < n - 1; ++i) {
-        bool swapped = false;
-        // after i passes, the last i elements are in place
-        for (int j = 0; j < n - 1 - i; ++j) {
-            if (arr[j] > arr[j + 1]) {
-                swap(arr[j], arr[j + 1]);
-                swapped = true;
+    <script>
+        function bubbleSort(arr) {
+            let n = arr.length;
+            for (let i = 0; i < n - 1; i++) {
+                let swapped = false;
+                for (let j = 0; j < n - 1 - i; j++) {
+                    if (arr[j] > arr[j + 1]) {
+                        // 交換元素
+                        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+                        swapped = true;
+                    }
+                }
+                if (!swapped) break; // 如果沒有交換，提前結束
             }
+            return arr;
         }
-        if (!swapped) {
-            // No elements were swapped during the pass; array is sorted
-            break;
+
+        function sortNumbers() {
+            const input = document.getElementById('inputNumbers').value;
+            const numbers = input.split(' ').map(Number).filter(n => !isNaN(n));
+            if (numbers.length === 0) {
+                document.getElementById('output').innerText = '請輸入有效的數字。';
+                return;
+            }
+            const sorted = bubbleSort([...numbers]); // 複製陣列避免修改原陣列
+            document.getElementById('output').innerText = '排序後: ' + sorted.join(' ');
         }
-    }
-}
-
-int main() {
-    vector<int> data;
-    cout << "Enter integers to sort (type -1 to finish):\n";
-    int x;
-    while (cin >> x && x != -1) {
-        data.push_back(x);
-    }
-
-    bubbleSort(data);
-
-    cout << "Sorted output:\n";
-    for (int v : data) {
-        cout << v << " ";
-    }
-    cout << '\n';
-
-    return 0;
-}
+    </script>
+</body>
+</html>
