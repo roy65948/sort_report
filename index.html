@@ -231,6 +231,7 @@
         }
 
         function sortNumbers(algorithm) {
+            console.log('Starting sort for algorithm:', algorithm);
             let inputId, outputId, sortFunc;
             switch (algorithm) {
                 case 'bubble':
@@ -253,14 +254,21 @@
                     outputId = 'insertionOutput';
                     sortFunc = insertionSort;
                     break;
+                default:
+                    console.error('Unknown algorithm:', algorithm);
+                    return;
             }
             const input = document.getElementById(inputId).value;
+            console.log('Input value:', input);
             const numbers = input.split(' ').map(Number).filter(n => !isNaN(n));
+            console.log('Parsed numbers:', numbers);
             if (numbers.length === 0) {
                 document.getElementById(outputId).innerText = '請輸入有效的數字。';
+                console.log('No valid numbers entered');
                 return;
             }
             const sorted = sortFunc([...numbers]);
+            console.log('Sorted result:', sorted);
             document.getElementById(outputId).innerText = '排序後: ' + sorted.join(' ');
         }
     </script>
