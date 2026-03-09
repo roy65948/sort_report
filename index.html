@@ -5,37 +5,164 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>排序算法比較</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; text-align: center; }
-        h1 { color: #333; }
-        ul { list-style: none; padding: 0; }
-        li { margin: 10px 0; }
-        a { text-decoration: none; padding: 10px 20px; background-color: #4CAF50; color: white; border-radius: 5px; cursor: pointer; }
-        a:hover { background-color: #45a049; }
-        .page { display: none; }
-        .page.active { display: block; }
-        input, button { margin: 10px 0; padding: 8px; }
-        #output { margin-top: 20px; font-weight: bold; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        h1 {
+            color: #4CAF50;
+            margin-bottom: 10px;
+        }
+        p {
+            color: #666;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+        li {
+            margin: 0;
+        }
+        a {
+            display: inline-block;
+            padding: 15px 25px;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+        a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+        .page {
+            display: none;
+            padding: 30px;
+        }
+        .page.active {
+            display: block;
+        }
+        .sort-input {
+            margin: 20px 0;
+            text-align: center;
+        }
+        input[type="text"] {
+            padding: 10px;
+            width: 60%;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+        button {
+            padding: 10px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        #output {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 5px;
+            font-weight: bold;
+            color: #333;
+            border-left: 5px solid #4CAF50;
+        }
+        .back-btn {
+            background: #2196F3;
+        }
+        .back-btn:hover {
+            background: #1976D2;
+        }
     </style>
 </head>
 <body>
-    <div id="home" class="page active">
-        <h1>排序算法比較</h1>
-        <p>選擇一個排序算法來查看示範：</p>
-        <ul>
-            <li><a onclick="showPage('bubble')">氣泡排序法 (Bubble Sort)</a></li>
-            <li><a onclick="showPage('quick')">快速排序法 (Quick Sort)</a> - 即將推出</li>
-            <li><a onclick="showPage('merge')">合併排序法 (Merge Sort)</a> - 即將推出</li>
-            <li><a onclick="showPage('insertion')">插入排序法 (Insertion Sort)</a> - 即將推出</li>
-        </ul>
-    </div>
+    <div class="container">
+        <div id="home" class="page active">
+            <h1>排序算法比較</h1>
+            <p>選擇一個排序算法來查看示範與比較：</p>
+            <ul>
+                <li><a onclick="showPage('bubble')">氣泡排序法 (Bubble Sort)</a></li>
+                <li><a onclick="showPage('quick')">快速排序法 (Quick Sort)</a></li>
+                <li><a onclick="showPage('merge')">合併排序法 (Merge Sort)</a></li>
+                <li><a onclick="showPage('insertion')">插入排序法 (Insertion Sort)</a></li>
+            </ul>
+        </div>
 
-    <div id="bubble" class="page">
-        <h1>氣泡排序法 (Bubble Sort)</h1>
-        <button onclick="showPage('home')">回首頁</button>
-        <p>輸入一串數字（用空格分隔），點擊排序按鈕來執行氣泡排序。</p>
-        <input type="text" id="inputNumbers" placeholder="例如: 5 3 8 1 9" size="50">
-        <button onclick="sortNumbers()">排序</button>
-        <div id="output"></div>
+        <div id="bubble" class="page">
+            <h1>氣泡排序法 (Bubble Sort)</h1>
+            <button class="back-btn" onclick="showPage('home')">回首頁</button>
+            <p>輸入一串數字（用空格分隔），點擊排序按鈕來執行氣泡排序。</p>
+            <div class="sort-input">
+                <input type="text" id="inputNumbers" placeholder="例如: 5 3 8 1 9">
+                <button onclick="sortNumbers('bubble')">排序</button>
+            </div>
+            <div id="output"></div>
+        </div>
+
+        <div id="quick" class="page">
+            <h1>快速排序法 (Quick Sort)</h1>
+            <button class="back-btn" onclick="showPage('home')">回首頁</button>
+            <p>輸入一串數字（用空格分隔），點擊排序按鈕來執行快速排序。</p>
+            <div class="sort-input">
+                <input type="text" id="quickInput" placeholder="例如: 5 3 8 1 9">
+                <button onclick="sortNumbers('quick')">排序</button>
+            </div>
+            <div id="quickOutput"></div>
+        </div>
+
+        <div id="merge" class="page">
+            <h1>合併排序法 (Merge Sort)</h1>
+            <button class="back-btn" onclick="showPage('home')">回首頁</button>
+            <p>輸入一串數字（用空格分隔），點擊排序按鈕來執行合併排序。</p>
+            <div class="sort-input">
+                <input type="text" id="mergeInput" placeholder="例如: 5 3 8 1 9">
+                <button onclick="sortNumbers('merge')">排序</button>
+            </div>
+            <div id="mergeOutput"></div>
+        </div>
+
+        <div id="insertion" class="page">
+            <h1>插入排序法 (Insertion Sort)</h1>
+            <button class="back-btn" onclick="showPage('home')">回首頁</button>
+            <p>輸入一串數字（用空格分隔），點擊排序按鈕來執行插入排序。</p>
+            <div class="sort-input">
+                <input type="text" id="insertionInput" placeholder="例如: 5 3 8 1 9">
+                <button onclick="sortNumbers('insertion')">排序</button>
+            </div>
+            <div id="insertionOutput"></div>
+        </div>
     </div>
 
     <script>
@@ -51,25 +178,90 @@
                 let swapped = false;
                 for (let j = 0; j < n - 1 - i; j++) {
                     if (arr[j] > arr[j + 1]) {
-                        // 交換元素
                         [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
                         swapped = true;
                     }
                 }
-                if (!swapped) break; // 如果沒有交換，提前結束
+                if (!swapped) break;
             }
             return arr;
         }
 
-        function sortNumbers() {
-            const input = document.getElementById('inputNumbers').value;
+        function quickSort(arr) {
+            if (arr.length <= 1) return arr;
+            const pivot = arr[arr.length - 1];
+            const left = [];
+            const right = [];
+            for (let i = 0; i < arr.length - 1; i++) {
+                if (arr[i] < pivot) left.push(arr[i]);
+                else right.push(arr[i]);
+            }
+            return [...quickSort(left), pivot, ...quickSort(right)];
+        }
+
+        function mergeSort(arr) {
+            if (arr.length <= 1) return arr;
+            const mid = Math.floor(arr.length / 2);
+            const left = mergeSort(arr.slice(0, mid));
+            const right = mergeSort(arr.slice(mid));
+            return merge(left, right);
+        }
+
+        function merge(left, right) {
+            const result = [];
+            let i = 0, j = 0;
+            while (i < left.length && j < right.length) {
+                if (left[i] < right[j]) result.push(left[i++]);
+                else result.push(right[j++]);
+            }
+            return result.concat(left.slice(i)).concat(right.slice(j));
+        }
+
+        function insertionSort(arr) {
+            for (let i = 1; i < arr.length; i++) {
+                let key = arr[i];
+                let j = i - 1;
+                while (j >= 0 && arr[j] > key) {
+                    arr[j + 1] = arr[j];
+                    j--;
+                }
+                arr[j + 1] = key;
+            }
+            return arr;
+        }
+
+        function sortNumbers(algorithm) {
+            let inputId, outputId, sortFunc;
+            switch (algorithm) {
+                case 'bubble':
+                    inputId = 'inputNumbers';
+                    outputId = 'output';
+                    sortFunc = bubbleSort;
+                    break;
+                case 'quick':
+                    inputId = 'quickInput';
+                    outputId = 'quickOutput';
+                    sortFunc = quickSort;
+                    break;
+                case 'merge':
+                    inputId = 'mergeInput';
+                    outputId = 'mergeOutput';
+                    sortFunc = mergeSort;
+                    break;
+                case 'insertion':
+                    inputId = 'insertionInput';
+                    outputId = 'insertionOutput';
+                    sortFunc = insertionSort;
+                    break;
+            }
+            const input = document.getElementById(inputId).value;
             const numbers = input.split(' ').map(Number).filter(n => !isNaN(n));
             if (numbers.length === 0) {
-                document.getElementById('output').innerText = '請輸入有效的數字。';
+                document.getElementById(outputId).innerText = '請輸入有效的數字。';
                 return;
             }
-            const sorted = bubbleSort([...numbers]); // 複製陣列避免修改原陣列
-            document.getElementById('output').innerText = '排序後: ' + sorted.join(' ');
+            const sorted = sortFunc([...numbers]);
+            document.getElementById(outputId).innerText = '排序後: ' + sorted.join(' ');
         }
     </script>
 </body>
