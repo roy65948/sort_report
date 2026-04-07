@@ -6,7 +6,56 @@ const animationState = {
     running: false,
     original: []
 };
-const animationDelay = 700;
+
+function getAnimationDelay(algorithm) {
+    const speedInput = document.getElementById(algorithm + 'Speed');
+    return speedInput ? parseInt(speedInput.value) : 700;
+}
+
+function updateSpeedDisplay(algorithm) {
+    const speedInput = document.getElementById(algorithm + 'Speed');
+    const speedValue = document.getElementById(algorithm + 'SpeedValue');
+    if (speedInput && speedValue) {
+        speedValue.textContent = speedInput.value + 'ms';
+    }
+}
+
+function initializeSpeedControl(algorithm) {
+    const speedInput = document.getElementById(algorithm + 'Speed');
+    const speedNumber = document.getElementById(algorithm + 'SpeedInput');
+    if (speedInput && speedNumber) {
+        // 初始化顯示值
+        updateSpeedDisplay(algorithm);
+        // 同步滑桿與手動輸入框
+        speedInput.addEventListener('input', () => {
+            speedNumber.value = speedInput.value;
+            updateSpeedDisplay(algorithm);
+        });
+        speedNumber.addEventListener('input', () => {
+            let value = parseInt(speedNumber.value, 10);
+            if (isNaN(value) || value < 1) value = 1;
+            if (value > 2000) value = 2000;
+            speedNumber.value = value;
+            speedInput.value = value;
+            updateSpeedDisplay(algorithm);
+        });
+    }
+}
+
+function generateRandomNumbers(algorithm) {
+    const countInput = document.getElementById(algorithm + 'Count');
+    const count = parseInt(countInput.value) || 10;
+    const numbers = [];
+    for (let i = 0; i < count; i++) {
+        numbers.push(Math.floor(Math.random() * 100) + 1); // 1-100 的隨機數
+    }
+    // 將數字存儲在隱藏的地方供排序使用
+    animationState.original = [...numbers];
+    // 立即顯示初始狀態
+    const config = getConfig(algorithm);
+    drawBars(numbers, config.sortedVisId);
+    document.getElementById(config.statusId).textContent = `已生成 ${count} 個隨機數字`;
+}
 
 function drawBars(arr, containerId, highlight = {}) {
     const container = document.getElementById(containerId);
@@ -20,7 +69,6 @@ function drawBars(arr, containerId, highlight = {}) {
         if (highlight.pivot === index) bar.classList.add('bar-pivot');
         if (highlight.merge?.includes(index)) bar.classList.add('bar-merge');
         bar.style.height = (num / max * 100) + 'px';
-        bar.textContent = num;
         container.appendChild(bar);
     });
 }
@@ -85,14 +133,12 @@ function getConfig(algorithm) {
 function startSortAnimation(algorithm) {
     resetAnimation();
     const cfg = getConfig(algorithm);
-    const input = document.getElementById(cfg.inputId).value;
-    const numbers = input.split(' ').map(Number).filter(n => !isNaN(n));
+    const numbers = animationState.original;
     if (numbers.length === 0) {
-        setStatus('請輸入有效的數字。', cfg);
+        setStatus('請先生成隨機數字。', cfg);
         return;
     }
     animationState.algorithm = algorithm;
-    animationState.original = [...numbers];
     animationState.steps = getSortSteps(algorithm, numbers);
     animationState.currentStep = 0;
     renderStep();
@@ -115,7 +161,7 @@ function startAnimation() {
             pauseAnimation();
             setStatus('排序完成。', cfg);
         }
-    }, animationDelay);
+    }, getAnimationDelay(animationState.algorithm));
 }
 
 function pauseAnimation() {
@@ -165,7 +211,7 @@ function resetAnimation() {
     animationState.steps = [];
     animationState.currentStep = 0;
     animationState.algorithm = null;
-    animationState.original = [];
+    // 不清空 animationState.original，保留用戶生成的隨機數字
 }
 
 function updateControls() {

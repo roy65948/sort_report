@@ -13,8 +13,16 @@
         <div class="sort-section">
             <p>輸入一串數字（用空格分隔），點擊開始動畫來執行合併排序。</p>
             <div class="sort-input">
-                <input type="text" id="mergeInput" placeholder="例如: 5 3 8 1 9">
+                <label for="mergeCount">數字個數 (1-200)：</label>
+                <input type="number" id="mergeCount" min="1" max="200" value="10">
+                <button onclick="generateRandomNumbers('merge')">生成隨機數字</button>
                 <button onclick="startSortAnimation('merge')">開始動畫</button>
+            </div>
+            <div class="speed-control">
+                <label for="mergeSpeed">動畫速度：</label>
+                <input type="range" id="mergeSpeed" min="1" max="2000" value="700" step="1">
+                <input type="number" id="mergeSpeedInput" min="1" max="2000" value="700" step="1">
+                <span id="mergeSpeedValue">700ms</span>
             </div>
             <div class="animation-controls">
                 <button id="pauseBtnMerge" onclick="togglePause()" disabled>暫停</button>
@@ -30,5 +38,8 @@
         </div>
     </div>
     <script src="script.js"></script>
+    <script>
+        initializeSpeedControl('merge');
+    </script>
 </body>
 </html>

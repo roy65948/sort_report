@@ -13,8 +13,16 @@
         <div class="sort-section">
             <p>輸入一串數字（用空格分隔），點擊開始動畫來執行插入排序。</p>
             <div class="sort-input">
-                <input type="text" id="insertionInput" placeholder="例如: 5 3 8 1 9">
+                <label for="insertionCount">數字個數 (1-200)：</label>
+                <input type="number" id="insertionCount" min="1" max="200" value="10">
+                <button onclick="generateRandomNumbers('insertion')">生成隨機數字</button>
                 <button onclick="startSortAnimation('insertion')">開始動畫</button>
+            </div>
+            <div class="speed-control">
+                <label for="insertionSpeed">動畫速度：</label>
+                <input type="range" id="insertionSpeed" min="1" max="2000" value="700" step="1">
+                <input type="number" id="insertionSpeedInput" min="1" max="2000" value="700" step="1">
+                <span id="insertionSpeedValue">700ms</span>
             </div>
             <div class="animation-controls">
                 <button id="pauseBtnInsertion" onclick="togglePause()" disabled>暫停</button>
@@ -30,5 +38,8 @@
         </div>
     </div>
     <script src="script.js"></script>
+    <script>
+        initializeSpeedControl('insertion');
+    </script>
 </body>
 </html>
