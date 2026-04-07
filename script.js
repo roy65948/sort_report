@@ -8,14 +8,17 @@ const animationState = {
 };
 const animationDelay = 700;
 
-function drawBars(arr, containerId) {
+function drawBars(arr, containerId, highlight = {}) {
     const container = document.getElementById(containerId);
     if (!container) return;
     container.innerHTML = '';
     const max = Math.max(...arr, 1);
-    arr.forEach(num => {
+    arr.forEach((num, index) => {
         const bar = document.createElement('div');
         bar.className = 'bar';
+        if (highlight.compare?.includes(index)) bar.classList.add('bar-compare');
+        if (highlight.pivot === index) bar.classList.add('bar-pivot');
+        if (highlight.merge?.includes(index)) bar.classList.add('bar-merge');
         bar.style.height = (num / max * 100) + 'px';
         bar.textContent = num;
         container.appendChild(bar);
@@ -27,7 +30,6 @@ function getConfig(algorithm) {
         case 'bubble':
             return {
                 inputId: 'inputNumbers',
-                initialVisId: 'bubbleInitialVis',
                 sortedVisId: 'bubbleSortedVis',
                 outputId: 'output',
                 statusId: 'statusBubble',
@@ -38,7 +40,6 @@ function getConfig(algorithm) {
         case 'quick':
             return {
                 inputId: 'quickInput',
-                initialVisId: 'quickInitialVis',
                 sortedVisId: 'quickSortedVis',
                 outputId: 'quickOutput',
                 statusId: 'statusQuick',
@@ -49,7 +50,6 @@ function getConfig(algorithm) {
         case 'merge':
             return {
                 inputId: 'mergeInput',
-                initialVisId: 'mergeInitialVis',
                 sortedVisId: 'mergeSortedVis',
                 outputId: 'mergeOutput',
                 statusId: 'statusMerge',
@@ -60,7 +60,6 @@ function getConfig(algorithm) {
         case 'insertion':
             return {
                 inputId: 'insertionInput',
-                initialVisId: 'insertionInitialVis',
                 sortedVisId: 'insertionSortedVis',
                 outputId: 'insertionOutput',
                 statusId: 'statusInsertion',
@@ -71,7 +70,6 @@ function getConfig(algorithm) {
         case 'selection':
             return {
                 inputId: 'selectionInput',
-                initialVisId: 'selectionInitialVis',
                 sortedVisId: 'selectionSortedVis',
                 outputId: 'selectionOutput',
                 statusId: 'statusSelection',
@@ -185,12 +183,11 @@ function updateControls() {
 function renderStep() {
     const cfg = getConfig(animationState.algorithm);
     if (!cfg || animationState.steps.length === 0) return;
-    drawBars(animationState.original, cfg.initialVisId);
     const step = animationState.steps[animationState.currentStep];
-    drawBars(step.arr, cfg.sortedVisId);
+    drawBars(step.arr, cfg.sortedVisId, step.highlight);
     const statusText = `步驟 ${animationState.currentStep + 1} / ${animationState.steps.length}`;
     document.getElementById(cfg.statusId).innerText = statusText;
-    document.getElementById(cfg.outputId).innerText = `狀態：${step.desc}\n陣列：${step.arr.join(' ')}`;
+    document.getElementById(cfg.outputId).innerText = `狀態：${step.desc}  排列：${step.arr.join(' ')}`;
 }
 
 function setStatus(text, cfg) {
@@ -223,11 +220,11 @@ function bubbleSortSteps(arr) {
     for (let i = 0; i < n - 1; i++) {
         let swapped = false;
         for (let j = 0; j < n - 1 - i; j++) {
-            steps.push({ arr: [...a], desc: `比較索引 ${j} 和 ${j + 1}` });
+            steps.push({ arr: [...a], desc: `比較索引 ${j} 和 ${j + 1}` , highlight: { compare: [j, j + 1] } });
             if (a[j] > a[j + 1]) {
                 [a[j], a[j + 1]] = [a[j + 1], a[j]];
                 swapped = true;
-                steps.push({ arr: [...a], desc: `交換 ${j} 和 ${j + 1}` });
+                steps.push({ arr: [...a], desc: `交換 ${j} 和 ${j + 1}` , highlight: { compare: [j, j + 1] } });
             }
         }
         if (!swapped) break;
@@ -243,14 +240,15 @@ function insertionSortSteps(arr) {
     for (let i = 1; i < a.length; i++) {
         const key = a[i];
         let j = i - 1;
-        steps.push({ arr: [...a], desc: `取出索引 ${i} 的元素 ${key}` });
+        steps.push({ arr: [...a], desc: `取出索引 ${i} 的元素 ${key}` , highlight: { compare: [i] } });
         while (j >= 0 && a[j] > key) {
+            steps.push({ arr: [...a], desc: `比較索引 ${j} 和 ${i}` , highlight: { compare: [j, i] } });
             a[j + 1] = a[j];
-            steps.push({ arr: [...a], desc: `將索引 ${j} 的值向右移動` });
+            steps.push({ arr: [...a], desc: `將索引 ${j} 的值向右移動` , highlight: { compare: [j, j + 1] } });
             j--;
         }
         a[j + 1] = key;
-        steps.push({ arr: [...a], desc: `將元素 ${key} 插入索引 ${j + 1}` });
+        steps.push({ arr: [...a], desc: `將元素 ${key} 插入索引 ${j + 1}` , highlight: { compare: [j + 1] } });
     }
     steps.push({ arr: [...a], desc: '排序完成' });
     return steps;
@@ -262,17 +260,17 @@ function selectionSortSteps(arr) {
     steps.push({ arr: [...a], desc: '起始狀態' });
     for (let i = 0; i < a.length - 1; i++) {
         let minIndex = i;
-        steps.push({ arr: [...a], desc: `從索引 ${i} 開始尋找最小值` });
+        steps.push({ arr: [...a], desc: `從索引 ${i} 開始尋找最小值` , highlight: { compare: [i] } });
         for (let j = i + 1; j < a.length; j++) {
-            steps.push({ arr: [...a], desc: `比較索引 ${j} 和目前最小值 ${minIndex}` });
+            steps.push({ arr: [...a], desc: `比較索引 ${j} 和目前最小值 ${minIndex}` , highlight: { compare: [j, minIndex] } });
             if (a[j] < a[minIndex]) {
                 minIndex = j;
-                steps.push({ arr: [...a], desc: `更新最小值位置為 ${minIndex}` });
+                steps.push({ arr: [...a], desc: `更新最小值位置為 ${minIndex}` , highlight: { compare: [minIndex] } });
             }
         }
         if (minIndex !== i) {
             [a[i], a[minIndex]] = [a[minIndex], a[i]];
-            steps.push({ arr: [...a], desc: `交換索引 ${i} 和 ${minIndex}` });
+            steps.push({ arr: [...a], desc: `交換索引 ${i} 和 ${minIndex}` , highlight: { compare: [i, minIndex] } });
         }
     }
     steps.push({ arr: [...a], desc: '排序完成' });
@@ -288,17 +286,17 @@ function quickSortSteps(arr) {
         if (l >= r) return;
         const pivot = a[r];
         let i = l;
-        steps.push({ arr: [...a], desc: `選擇樞軸 ${pivot}（索引 ${r}）` });
+        steps.push({ arr: [...a], desc: `選擇樞軸 ${pivot}（索引 ${r}）`, highlight: { pivot: r } });
         for (let j = l; j < r; j++) {
-            steps.push({ arr: [...a], desc: `比較索引 ${j} 和樞軸` });
+            steps.push({ arr: [...a], desc: `比較索引 ${j} 和樞軸`, highlight: { compare: [j], pivot: r } });
             if (a[j] < pivot) {
                 [a[i], a[j]] = [a[j], a[i]];
-                steps.push({ arr: [...a], desc: `交換 ${j} 和 ${i}` });
+                steps.push({ arr: [...a], desc: `交換 ${j} 和 ${i}`, highlight: { compare: [i, j], pivot: r } });
                 i += 1;
             }
         }
         [a[i], a[r]] = [a[r], a[i]];
-        steps.push({ arr: [...a], desc: `樞軸放置到索引 ${i}` });
+        steps.push({ arr: [...a], desc: `樞軸放置到索引 ${i}`, highlight: { pivot: i } });
         quick(l, i - 1);
         quick(i + 1, r);
     }
@@ -331,7 +329,8 @@ function mergeSortSteps(arr) {
         for (let k = 0; k < merged.length; k++) {
             a[left + k] = merged[k];
         }
-        steps.push({ arr: [...a], desc: `合併區間 ${left} 到 ${right}` });
+        const compareRange = Array.from({ length: right - left + 1 }, (_, idx) => left + idx);
+        steps.push({ arr: [...a], desc: `合併區間 ${left} 到 ${right}`, highlight: { merge: compareRange } });
         return merged;
     }
 

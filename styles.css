@@ -187,6 +187,7 @@ button:hover {
 .visualization {
     margin: 20px 0;
     text-align: center;
+    width: 100%;
 }
 .visualization h4 {
     margin: 10px 0;
@@ -198,16 +199,28 @@ button:hover {
     align-items: flex-end;
     height: 120px;
     margin: 10px 0;
+    width: 100%;
+    overflow-x: auto;
+    padding: 0 10px;
 }
 .bar {
-    width: 30px;
+    width: 40px;
     background: #4CAF50;
-    margin: 0 2px;
+    margin: 0 4px;
     display: flex;
     align-items: flex-end;
     justify-content: center;
     color: white;
     font-weight: bold;
     border-radius: 3px 3px 0 0;
-    transition: height 0.3s;
+    transition: height 0.3s, background 0.3s;
+}
+.bar-compare {
+    background: #fb8c00;
+}
+.bar-pivot {
+    background: #e53935;
+}
+.bar-merge {
+    background: #29b6f6;
 }
