@@ -168,6 +168,9 @@ button:hover {
     width: fit-content;
     margin: 0 auto;
 }
+.status.hidden {
+    display: none;
+}
 .diagram {
     background: rgba(33, 150, 243, 0.1);
     border: 1px solid #2196F3;
@@ -220,6 +223,20 @@ button:hover {
     margin: 10px 0;
     color: #4CAF50;
 }
+.step-display {
+    min-height: 24px;
+    padding: 8px 12px;
+    background: #e8f5e8;
+    border: 1px solid #4CAF50;
+    border-radius: 6px;
+    color: #2e7d32;
+    text-align: center;
+    font-weight: bold;
+    margin: 8px 0;
+}
+.step-display.hidden {
+    display: none;
+}
 .bars {
     display: flex;
     justify-content: center;
@@ -229,11 +246,14 @@ button:hover {
     width: 100%;
     overflow-x: auto;
     padding: 0 10px;
+    justify-content: flex-start;
 }
 .bar {
-    width: 40px;
+    flex: 1 1 0;
+    min-width: 2px;
+    max-width: 40px;
     background: #4CAF50;
-    margin: 0 4px;
+    margin: 0 2px;
     display: flex;
     align-items: flex-end;
     justify-content: center;

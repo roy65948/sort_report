@@ -38,6 +38,7 @@ function initializeSpeedControl(algorithm) {
     if (speedInput && speedNumber && speedPreset) {
         // 初始化顯示值
         updateSpeedDisplay(algorithm);
+        initializeStatus(algorithm);
         // 同步滑桿與手動輸入框
         speedInput.addEventListener('input', () => {
             speedNumber.value = speedInput.value;
@@ -65,6 +66,11 @@ function initializeSpeedControl(algorithm) {
 }
 
 function generateRandomNumbers(algorithm) {
+    // 如果動畫正在運行，先停止它
+    if (animationState.running) {
+        pauseAnimation();
+    }
+
     const countInput = document.getElementById(algorithm + 'Count');
     const count = parseInt(countInput.value) || 10;
     const numbers = [];
@@ -73,10 +79,15 @@ function generateRandomNumbers(algorithm) {
     }
     // 將數字存儲在隱藏的地方供排序使用
     animationState.original = [...numbers];
+    // 重置動畫狀態
+    animationState.steps = [];
+    animationState.currentStep = 0;
     // 立即顯示初始狀態
     const config = getConfig(algorithm);
     drawBars(numbers, config.sortedVisId);
-    document.getElementById(config.statusId).textContent = `已生成 ${count} 個隨機數字`;
+    setStatus(`已生成 ${count} 個隨機數字`, config);
+    // 更新按鈕狀態
+    updateControls();
 }
 
 function drawBars(arr, containerId, highlight = {}) {
@@ -93,6 +104,7 @@ function drawBars(arr, containerId, highlight = {}) {
         bar.style.height = (num / max * 100) + 'px';
         container.appendChild(bar);
     });
+    container.scrollLeft = 0;
 }
 
 function getConfig(algorithm) {
@@ -103,6 +115,7 @@ function getConfig(algorithm) {
                 sortedVisId: 'bubbleSortedVis',
                 outputId: 'output',
                 statusId: 'statusBubble',
+                stepId: 'stepBubble',
                 pauseBtnId: 'pauseBtnBubble',
                 backBtnId: 'backBtnBubble',
                 forwardBtnId: 'forwardBtnBubble'
@@ -113,6 +126,7 @@ function getConfig(algorithm) {
                 sortedVisId: 'quickSortedVis',
                 outputId: 'quickOutput',
                 statusId: 'statusQuick',
+                stepId: 'stepQuick',
                 pauseBtnId: 'pauseBtnQuick',
                 backBtnId: 'backBtnQuick',
                 forwardBtnId: 'forwardBtnQuick'
@@ -123,6 +137,7 @@ function getConfig(algorithm) {
                 sortedVisId: 'mergeSortedVis',
                 outputId: 'mergeOutput',
                 statusId: 'statusMerge',
+                stepId: 'stepMerge',
                 pauseBtnId: 'pauseBtnMerge',
                 backBtnId: 'backBtnMerge',
                 forwardBtnId: 'forwardBtnMerge'
@@ -133,6 +148,7 @@ function getConfig(algorithm) {
                 sortedVisId: 'insertionSortedVis',
                 outputId: 'insertionOutput',
                 statusId: 'statusInsertion',
+                stepId: 'stepInsertion',
                 pauseBtnId: 'pauseBtnInsertion',
                 backBtnId: 'backBtnInsertion',
                 forwardBtnId: 'forwardBtnInsertion'
@@ -143,6 +159,7 @@ function getConfig(algorithm) {
                 sortedVisId: 'selectionSortedVis',
                 outputId: 'selectionOutput',
                 statusId: 'statusSelection',
+                stepId: 'stepSelection',
                 pauseBtnId: 'pauseBtnSelection',
                 backBtnId: 'backBtnSelection',
                 forwardBtnId: 'forwardBtnSelection'
@@ -168,27 +185,36 @@ function startSortAnimation(algorithm) {
     startAnimation();
 }
 
-function startAnimation() {
-    if (!animationState.algorithm || animationState.steps.length === 0) return;
+function scheduleNextStep() {
+    if (!animationState.running || !animationState.algorithm) return;
     const cfg = getConfig(animationState.algorithm);
-    if (animationState.intervalId) clearInterval(animationState.intervalId);
-    animationState.running = true;
-    document.getElementById(cfg.pauseBtnId).innerText = '暫停';
-    animationState.intervalId = setInterval(() => {
+    let delay = getAnimationDelay(animationState.algorithm);
+    animationState.intervalId = setTimeout(() => {
+        if (!animationState.running) return;
         if (animationState.currentStep < animationState.steps.length - 1) {
             animationState.currentStep += 1;
             renderStep();
             updateControls();
+            scheduleNextStep();
         } else {
             pauseAnimation();
             setStatus('排序完成。', cfg);
         }
-    }, getAnimationDelay(animationState.algorithm));
+    }, delay);
+}
+
+function startAnimation() {
+    if (!animationState.algorithm || animationState.steps.length === 0) return;
+    const cfg = getConfig(animationState.algorithm);
+    if (animationState.intervalId) clearTimeout(animationState.intervalId);
+    animationState.running = true;
+    document.getElementById(cfg.pauseBtnId).innerText = '暫停';
+    scheduleNextStep();
 }
 
 function pauseAnimation() {
     if (animationState.intervalId) {
-        clearInterval(animationState.intervalId);
+        clearTimeout(animationState.intervalId);
         animationState.intervalId = null;
     }
     animationState.running = false;
@@ -226,7 +252,7 @@ function stepForward() {
 
 function resetAnimation() {
     if (animationState.intervalId) {
-        clearInterval(animationState.intervalId);
+        clearTimeout(animationState.intervalId);
         animationState.intervalId = null;
     }
     animationState.running = false;
@@ -254,13 +280,27 @@ function renderStep() {
     const step = animationState.steps[animationState.currentStep];
     drawBars(step.arr, cfg.sortedVisId, step.highlight);
     const statusText = `步驟 ${animationState.currentStep + 1} / ${animationState.steps.length}`;
-    document.getElementById(cfg.statusId).innerText = statusText;
-    document.getElementById(cfg.outputId).innerText = `狀態：${step.desc}  排列：${step.arr.join(' ')}`;
+    const stepEl = document.getElementById(cfg.stepId);
+    if (stepEl) {
+        stepEl.innerText = statusText;
+        stepEl.classList.remove('hidden');
+    }
+    document.getElementById(cfg.outputId).innerText = `狀態：${step.desc}`;
 }
 
 function setStatus(text, cfg) {
-    const status = document.getElementById(cfg.statusId);
-    if (status) status.innerText = text;
+    const stepEl = document.getElementById(cfg.stepId);
+    if (stepEl) {
+        stepEl.innerText = text;
+        stepEl.classList.remove('hidden');
+    }
+}
+
+function initializeStatus(algorithm) {
+    const cfg = getConfig(algorithm);
+    if (!cfg) return;
+    const stepEl = document.getElementById(cfg.stepId);
+    if (stepEl) stepEl.classList.add('hidden');
 }
 
 function getSortSteps(algorithm, arr) {
@@ -288,11 +328,11 @@ function bubbleSortSteps(arr) {
     for (let i = 0; i < n - 1; i++) {
         let swapped = false;
         for (let j = 0; j < n - 1 - i; j++) {
-            steps.push({ arr: [...a], desc: `比較索引 ${j} 和 ${j + 1}` , highlight: { compare: [j, j + 1] } });
+            steps.push({ arr: [...a], desc: `比較第${j + 1}行與第${j + 2}行` , highlight: { compare: [j, j + 1] } });
             if (a[j] > a[j + 1]) {
                 [a[j], a[j + 1]] = [a[j + 1], a[j]];
                 swapped = true;
-                steps.push({ arr: [...a], desc: `交換 ${j} 和 ${j + 1}` , highlight: { compare: [j, j + 1] } });
+                steps.push({ arr: [...a], desc: `交換第${j + 1}行與第${j + 2}行` , highlight: { compare: [j, j + 1] } });
             }
         }
         if (!swapped) break;
@@ -308,15 +348,15 @@ function insertionSortSteps(arr) {
     for (let i = 1; i < a.length; i++) {
         const key = a[i];
         let j = i - 1;
-        steps.push({ arr: [...a], desc: `取出索引 ${i} 的元素 ${key}` , highlight: { compare: [i] } });
+        steps.push({ arr: [...a], desc: `取出第${i + 1}行的元素` , highlight: { compare: [i] } });
         while (j >= 0 && a[j] > key) {
-            steps.push({ arr: [...a], desc: `比較索引 ${j} 和 ${i}` , highlight: { compare: [j, i] } });
+            steps.push({ arr: [...a], desc: `比較第${j + 1}行與第${i + 1}行` , highlight: { compare: [j, i] } });
             a[j + 1] = a[j];
-            steps.push({ arr: [...a], desc: `將索引 ${j} 的值向右移動` , highlight: { compare: [j, j + 1] } });
+            steps.push({ arr: [...a], desc: `將第${j + 1}行的值向右移動` , highlight: { compare: [j, j + 1] } });
             j--;
         }
         a[j + 1] = key;
-        steps.push({ arr: [...a], desc: `將元素 ${key} 插入索引 ${j + 1}` , highlight: { compare: [j + 1] } });
+        steps.push({ arr: [...a], desc: `將元素插入第${j + 2}行` , highlight: { compare: [j + 1] } });
     }
     steps.push({ arr: [...a], desc: '排序完成' });
     return steps;
@@ -328,17 +368,17 @@ function selectionSortSteps(arr) {
     steps.push({ arr: [...a], desc: '起始狀態' });
     for (let i = 0; i < a.length - 1; i++) {
         let minIndex = i;
-        steps.push({ arr: [...a], desc: `從索引 ${i} 開始尋找最小值` , highlight: { compare: [i] } });
+        steps.push({ arr: [...a], desc: `從第${i + 1}行開始尋找最小值` , highlight: { compare: [i] } });
         for (let j = i + 1; j < a.length; j++) {
-            steps.push({ arr: [...a], desc: `比較索引 ${j} 和目前最小值 ${minIndex}` , highlight: { compare: [j, minIndex] } });
+            steps.push({ arr: [...a], desc: `比較第${j + 1}行與目前最小值位置` , highlight: { compare: [j, minIndex] } });
             if (a[j] < a[minIndex]) {
                 minIndex = j;
-                steps.push({ arr: [...a], desc: `更新最小值位置為 ${minIndex}` , highlight: { compare: [minIndex] } });
+                steps.push({ arr: [...a], desc: `更新最小值位置為第${minIndex + 1}行` , highlight: { compare: [minIndex] } });
             }
         }
         if (minIndex !== i) {
             [a[i], a[minIndex]] = [a[minIndex], a[i]];
-            steps.push({ arr: [...a], desc: `交換索引 ${i} 和 ${minIndex}` , highlight: { compare: [i, minIndex] } });
+            steps.push({ arr: [...a], desc: `交換第${i + 1}行與第${minIndex + 1}行` , highlight: { compare: [i, minIndex] } });
         }
     }
     steps.push({ arr: [...a], desc: '排序完成' });
@@ -354,17 +394,17 @@ function quickSortSteps(arr) {
         if (l >= r) return;
         const pivot = a[r];
         let i = l;
-        steps.push({ arr: [...a], desc: `選擇樞軸 ${pivot}（索引 ${r}）`, highlight: { pivot: r } });
+        steps.push({ arr: [...a], desc: `選擇樞軸（第${r + 1}行）`, highlight: { pivot: r } });
         for (let j = l; j < r; j++) {
-            steps.push({ arr: [...a], desc: `比較索引 ${j} 和樞軸`, highlight: { compare: [j], pivot: r } });
+            steps.push({ arr: [...a], desc: `比較第${j + 1}行與樞軸（第${r + 1}行）`, highlight: { compare: [j], pivot: r } });
             if (a[j] < pivot) {
                 [a[i], a[j]] = [a[j], a[i]];
-                steps.push({ arr: [...a], desc: `交換 ${j} 和 ${i}`, highlight: { compare: [i, j], pivot: r } });
+                steps.push({ arr: [...a], desc: `交換第${j + 1}行與第${i + 1}行`, highlight: { compare: [i, j], pivot: r } });
                 i += 1;
             }
         }
         [a[i], a[r]] = [a[r], a[i]];
-        steps.push({ arr: [...a], desc: `樞軸放置到索引 ${i}`, highlight: { pivot: i } });
+        steps.push({ arr: [...a], desc: `樞軸放置到第${i + 1}行`, highlight: { pivot: i } });
         quick(l, i - 1);
         quick(i + 1, r);
     }
@@ -398,7 +438,7 @@ function mergeSortSteps(arr) {
             a[left + k] = merged[k];
         }
         const compareRange = Array.from({ length: right - left + 1 }, (_, idx) => left + idx);
-        steps.push({ arr: [...a], desc: `合併區間 ${left} 到 ${right}`, highlight: { merge: compareRange } });
+        steps.push({ arr: [...a], desc: `合併第${left + 1}行到第${right + 1}行`, highlight: { merge: compareRange } });
         return merged;
     }
 
