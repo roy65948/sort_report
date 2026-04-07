@@ -20,6 +20,11 @@
             </div>
             <div class="speed-control">
                 <label for="selectionSpeed">動畫速度：</label>
+                <select id="selectionSpeedPreset">
+                    <option value="fast">快速 (100ms)</option>
+                    <option value="normal" selected>正常 (700ms)</option>
+                    <option value="slow">慢速 (1500ms)</option>
+                </select>
                 <input type="range" id="selectionSpeed" min="1" max="2000" value="700" step="1">
                 <input type="number" id="selectionSpeedInput" min="1" max="2000" value="700" step="1">
                 <span id="selectionSpeedValue">700ms</span>

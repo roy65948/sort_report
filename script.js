@@ -15,15 +15,27 @@ function getAnimationDelay(algorithm) {
 function updateSpeedDisplay(algorithm) {
     const speedInput = document.getElementById(algorithm + 'Speed');
     const speedValue = document.getElementById(algorithm + 'SpeedValue');
+    const speedPreset = document.getElementById(algorithm + 'SpeedPreset');
     if (speedInput && speedValue) {
         speedValue.textContent = speedInput.value + 'ms';
+    }
+    if (speedInput && speedPreset) {
+        const value = parseInt(speedInput.value, 10);
+        if (value <= 200) {
+            speedPreset.value = 'fast';
+        } else if (value <= 800) {
+            speedPreset.value = 'normal';
+        } else {
+            speedPreset.value = 'slow';
+        }
     }
 }
 
 function initializeSpeedControl(algorithm) {
     const speedInput = document.getElementById(algorithm + 'Speed');
     const speedNumber = document.getElementById(algorithm + 'SpeedInput');
-    if (speedInput && speedNumber) {
+    const speedPreset = document.getElementById(algorithm + 'SpeedPreset');
+    if (speedInput && speedNumber && speedPreset) {
         // 初始化顯示值
         updateSpeedDisplay(algorithm);
         // 同步滑桿與手動輸入框
@@ -37,6 +49,16 @@ function initializeSpeedControl(algorithm) {
             if (value > 2000) value = 2000;
             speedNumber.value = value;
             speedInput.value = value;
+            updateSpeedDisplay(algorithm);
+        });
+        speedPreset.addEventListener('change', () => {
+            const preset = speedPreset.value;
+            let value = 700;
+            if (preset === 'fast') value = 100;
+            else if (preset === 'normal') value = 700;
+            else if (preset === 'slow') value = 1500;
+            speedInput.value = value;
+            speedNumber.value = value;
             updateSpeedDisplay(algorithm);
         });
     }
