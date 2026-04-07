@@ -68,6 +68,17 @@ function getConfig(algorithm) {
                 backBtnId: 'backBtnInsertion',
                 forwardBtnId: 'forwardBtnInsertion'
             };
+        case 'selection':
+            return {
+                inputId: 'selectionInput',
+                initialVisId: 'selectionInitialVis',
+                sortedVisId: 'selectionSortedVis',
+                outputId: 'selectionOutput',
+                statusId: 'statusSelection',
+                pauseBtnId: 'pauseBtnSelection',
+                backBtnId: 'backBtnSelection',
+                forwardBtnId: 'forwardBtnSelection'
+            };
         default:
             return {};
     }
@@ -191,6 +202,8 @@ function getSortSteps(algorithm, arr) {
     switch (algorithm) {
         case 'bubble':
             return bubbleSortSteps(arr);
+        case 'selection':
+            return selectionSortSteps(arr);
         case 'quick':
             return quickSortSteps(arr);
         case 'merge':
@@ -238,6 +251,29 @@ function insertionSortSteps(arr) {
         }
         a[j + 1] = key;
         steps.push({ arr: [...a], desc: `將元素 ${key} 插入索引 ${j + 1}` });
+    }
+    steps.push({ arr: [...a], desc: '排序完成' });
+    return steps;
+}
+
+function selectionSortSteps(arr) {
+    const steps = [];
+    const a = [...arr];
+    steps.push({ arr: [...a], desc: '起始狀態' });
+    for (let i = 0; i < a.length - 1; i++) {
+        let minIndex = i;
+        steps.push({ arr: [...a], desc: `從索引 ${i} 開始尋找最小值` });
+        for (let j = i + 1; j < a.length; j++) {
+            steps.push({ arr: [...a], desc: `比較索引 ${j} 和目前最小值 ${minIndex}` });
+            if (a[j] < a[minIndex]) {
+                minIndex = j;
+                steps.push({ arr: [...a], desc: `更新最小值位置為 ${minIndex}` });
+            }
+        }
+        if (minIndex !== i) {
+            [a[i], a[minIndex]] = [a[minIndex], a[i]];
+            steps.push({ arr: [...a], desc: `交換索引 ${i} 和 ${minIndex}` });
+        }
     }
     steps.push({ arr: [...a], desc: '排序完成' });
     return steps;
