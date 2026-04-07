@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-tw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>快速排序法 (Quick Sort)</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>快速排序法 (Quick Sort)</h1>
+        <a class="back-btn" href="index.html">回首頁</a>
+        <div class="diagram">
+            <h3>圖示說明</h3>
+            <div class="diagram-bars">
+                <div class="diagram-bar" style="height: 50px;">5</div>
+                <div class="diagram-bar" style="height: 30px;">3</div>
+                <div class="diagram-bar" style="height: 80px;">8</div>
+                <div class="diagram-bar" style="height: 20px;">1</div>
+                <div class="diagram-bar" style="height: 90px;">9</div>
+            </div>
+            <div class="diagram-note">選一個樞軸（如最後一個元素），分隔小於/大於樞軸的陣列後遞歸排序。</div>
+        </div>
+        <div class="sort-section">
+            <p>輸入一串數字（用空格分隔），點擊排序按鈕來執行快速排序。</p>
+            <div class="sort-input">
+                <input type="text" id="quickInput" placeholder="例如: 5 3 8 1 9">
+                <button onclick="sortNumbers('quick')">排序</button>
+            </div>
+            <div class="visualization">
+                <h4>初始陣列</h4>
+                <div class="bars" id="quickInitialVis"></div>
+                <h4>排序後陣列</h4>
+                <div class="bars" id="quickSortedVis"></div>
+            </div>
+            <div id="quickOutput" class="output"></div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

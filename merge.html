@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-tw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>合併排序法 (Merge Sort)</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>合併排序法 (Merge Sort)</h1>
+        <a class="back-btn" href="index.html">回首頁</a>
+        <div class="diagram">
+            <h3>圖示說明</h3>
+            <div class="diagram-bars">
+                <div class="diagram-bar" style="height: 50px;">5</div>
+                <div class="diagram-bar" style="height: 30px;">3</div>
+                <div class="diagram-bar" style="height: 80px;">8</div>
+                <div class="diagram-bar" style="height: 20px;">1</div>
+                <div class="diagram-bar" style="height: 90px;">9</div>
+            </div>
+            <div class="diagram-note">將陣列分成兩半→遞歸排序→合併有序序列。</div>
+        </div>
+        <div class="sort-section">
+            <p>輸入一串數字（用空格分隔），點擊排序按鈕來執行合併排序。</p>
+            <div class="sort-input">
+                <input type="text" id="mergeInput" placeholder="例如: 5 3 8 1 9">
+                <button onclick="sortNumbers('merge')">排序</button>
+            </div>
+            <div class="visualization">
+                <h4>初始陣列</h4>
+                <div class="bars" id="mergeInitialVis"></div>
+                <h4>排序後陣列</h4>
+                <div class="bars" id="mergeSortedVis"></div>
+            </div>
+            <div id="mergeOutput" class="output"></div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
